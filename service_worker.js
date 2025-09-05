@@ -89,7 +89,8 @@ async function showNotification(task) {
     const opts = {
       type: 'basic',
       iconUrl: icon,
-      title: `リマインダー: ${task.title}`,
+      // 製品名を通知タイトルに併記（ブランド明示）
+      title: `Todorima – Optimal Reminder | リマインダー: ${task.title}`,
       message: task.note ? `${task.note}\n(${whenText})` : `${whenText}`,
       requireInteraction: !!settings.notificationRequireInteraction,
       priority: 2,
@@ -110,7 +111,8 @@ async function showNotification(task) {
       const opts2 = {
         type: 'basic',
         iconUrl: 'assets/icon128.png',
-        title: `リマインダー: ${task.title}`,
+        // 再試行時も同様に製品名を併記
+        title: `Todorima – Optimal Reminder | リマインダー: ${task.title}`,
         message: task.note ? `${task.note}\n(${whenText})` : `${whenText}`,
         requireInteraction: !!settings.notificationRequireInteraction,
         priority: 2,

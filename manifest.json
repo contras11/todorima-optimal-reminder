@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Todorima – Optimal Reminde",
+  "name": "Todorima – Optimal Reminder",
   "version": "0.1.0",
   "description": "単発/繰り返し/スヌーズ/完了/一覧/検索/同期/スリープ中に過ぎた予定を復帰後にお知らせするリマインダー。ストア非利用環境でもデベロッパーモードで利用可能",
   "permissions": ["alarms", "notifications", "storage", "idle"],
@@ -19,7 +19,7 @@
     }
   ],
   "action": {
-    "default_title": "Todorima – Optimal Reminde",
+    "default_title": "Todorima – Optimal Reminder",
     "default_popup": "popup/popup.html"
   },
   "options_page": "options/options.html",

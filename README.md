@@ -1,6 +1,8 @@
-# Todorima – Optimal Reminde（Chrome 拡張 / Manifest V3）
+# Todorima – Optimal Reminder（Chrome 拡張 / Manifest V3）
 
 単発／繰り返し／スヌーズ／完了／一覧／検索／同期／スリープ中に過ぎた予定の再通知に対応したタスク管理型のデスクトップ通知リマインダー拡張（MVP）。ポップアップは Atlassian Design を参考に、カード・チップ・タブ構成で一覧性を高めています。
+
+ステータス: 現在開発中で、近日中に Chrome Web Store での公開を予定しています。
 
 ## 特長（MVP）
 
@@ -15,7 +17,7 @@
 
 ## インストール手順
 
-1. 本リポジトリをローカルに取得し、`reminder-ext/` ディレクトリを Chrome の `chrome://extensions` で「デベロッパーモード」をオン → 「パッケージ化されていない拡張機能を読み込む」から選択。
+1. 本リポジトリをローカルに取得し、本リポジトリのルートディレクトリを Chrome の `chrome://extensions` で「デベロッパーモード」をオン → 「パッケージ化されていない拡張機能を読み込む」から選択。
 2. 拡張のポップアップからタスクを追加し、動作を確認。
 
 補足（ストアからのインストールができない環境でも）
@@ -81,3 +83,85 @@
 - Manifest V3 + ES Modules で拡張の最小完全版（MVP）を実装。
 - サービスワーカーにスケジュール・見逃し再通知・通知処理を集約し、直近1件のみアラーム登録でドリフトを最小化。
 - UI（ポップアップ/オプション）を簡潔に実装し、同期ストレージと連携。
+
+---
+
+## English
+
+### Todorima – Optimal Reminder (Chrome Extension / Manifest V3)
+
+Todorima – Optimal Reminder is a task‑centric desktop notification reminder extension for Chrome. It supports one‑off and recurring reminders, snooze, complete, list, search, sync, and catch‑up notifications for missed schedules after sleep. The popup UI uses a clean card/chip/tab layout inspired by Atlassian Design.
+
+Status: This project is currently under development and scheduled to be published on the Chrome Web Store soon.
+
+### Features (MVP)
+
+- Task creation: title, note, due date/time, priority, tags
+- Recurrence: Daily / Weekly (weekday selection) / Monthly (with interval)
+- Notification actions: Complete / Snooze (default duration configurable)
+- List, edit, delete, search, sort (due ascending / priority)
+- Sync storage (`chrome.storage.sync`)
+- Catch‑up notifications after sleep (individual cap + summary)
+- Rescheduling on restart/wake (only the nearest `chrome.alarms` entry)
+- Auto‑delete completed tasks (retention days configurable)
+
+### Installation
+
+1. Clone this repository and load the repository root directory from Chrome `chrome://extensions` with Developer Mode enabled via “Load unpacked”.
+2. Open the popup, add a task, and verify the behavior.
+
+Notes
+
+- If access to the Chrome Web Store is unavailable or store installation is not allowed, you can still use the extension via Developer Mode (works with Chromium‑based browsers like Edge/Brave as well).
+- If extensions are prohibited by organizational policy, you cannot use this extension. Administrator approval is required.
+
+### Usage
+
+- Click the toolbar icon and create a task in the popup.
+- Set due date/time with `datetime-local` and choose recurrence (daily/weekly/monthly) if needed. Weekly supports multiple weekday selection.
+- From notifications, select “Complete” or “Snooze (+default mins)”.
+- In Options, adjust snooze minutes, require‑interaction, week start, catch‑up window hours, and max individual catch‑up.
+- Choose theme (Light/Dark/System). You can also set the default collapsed state of the Completed section and the retention days for auto‑deletion.
+
+### Catch‑up After Sleep
+
+- Save `lastCheckedAt` to `storage.local`.
+- Run `catchUp()` on resume/start (`onStartup`/`onInstalled`/`idle.onStateChanged(active)`) and on delayed alarm (`alarms.onAlarm`).
+- For `lastCheckedAt < dueAt <= now`, send notifications after resume. Up to the individual limit are notified separately; the rest are summarized.
+- Roll forward recurring tasks with `nextOccurrence()` (update `dueAt` to the next occurrence).
+- Finally set `lastCheckedAt = now`, then `rehydrateAll()` re‑registers only the nearest alarm.
+
+### Auto‑delete Completed
+
+- Automatically deletes completed tasks older than the configured retention days (default: 30 days).
+- Set to 0 to disable auto‑deletion.
+
+### Data Model (JSDoc)
+
+See JSDoc in `utils/time.js` and `service_worker.js`.
+
+### Technical Notes
+
+- MV3 / ES Modules. `background.service_worker` uses `type: "module"`.
+- Only the nearest alarm is registered via `chrome.alarms.create`; the next one is registered on fire.
+- Treat time in local time; persist as epoch ms.
+- Use `chrome.notifications` buttons for Complete/Snooze actions.
+
+### Known Limitations (MVP)
+
+- Placeholder icons (monotone). Consider replacing if needed.
+- No notification sound yet (may consider offscreen + Audio in the future).
+
+### Trivia
+
+- The icon is a sea lion ("Todo" wordplay in Japanese). Cute and hard to forget—aiming for that experience. A lightweight PNG is bundled and can be replaced as you like.
+
+### Test Checklist (Acceptance)
+
+- Add a task from the popup → A notification appears at its due time.
+- Recurrence (daily/weekly/monthly) computes the next time correctly (`utils/time.js`).
+- “Complete” marks the task done / “Snooze” extends `dueAt`.
+- After browser restart, `rehydrateAll()` re‑registers the nearest alarm.
+- After PC sleep → resume, `catchUp()` notifies missed items; overflow items are summarized.
+- Changes in Options take effect (snooze mins, require‑interaction, catch‑up window/limit).
+- Tasks/settings persist via `chrome.storage.sync`.
