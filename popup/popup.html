@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todorima – Optimal Reminde</title>
+    <style>
+      :root {
+        --bg: #F7F8FA;
+        --surface: #FFFFFF;
+        --elevated: #FFFFFF;
+        --text: #172B4D;
+        --muted: #6B778C;
+        --muted-strong: #475569;
+        --border: #DFE1E6;
+        --primary: #2684FF;
+        --primary-hover: #1D6FE5;
+        --danger: #DE350B;
+        --danger-hover: #BF2600;
+        --success: #36B37E;
+        --warning: #FFAB00;
+        --radius: 10px;
+        --spacing: 10px;
+        --shadow: 0 1px 2px rgba(9,30,66,.1), 0 0 1px rgba(9,30,66,.15);
+      }
+      body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; width: 440px; background: var(--bg); color: var(--text); }
+      header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, #FFFFFF 0%, #FAFBFC 100%); position: sticky; top: 0; z-index: 2; }
+      header .title { font-weight: 700; letter-spacing: .2px; color: var(--text); }
+      header a { color: var(--primary); text-decoration: none; font-weight: 500; }
+      header a:hover { text-decoration: underline; }
+      .nav { display: flex; gap: 6px; padding: 8px; background: transparent; position: sticky; top: 52px; z-index: 1; }
+      .tab { padding: 8px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 12px; box-shadow: var(--shadow); }
+      .tab.active { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 0 2px rgba(38,132,255,0.15), var(--shadow); }
+      .container { padding: 10px; }
+      form input, form select, form textarea { width: 100%; box-sizing: border-box; margin: 6px 0 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); box-shadow: inset 0 1px 0 rgba(9,30,66,.04); }
+      form input:focus, form select:focus, form textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(38,132,255,0.2); }
+      textarea { resize: vertical; }
+      .row { display: flex; gap: 10px; }
+      .row > * { flex: 1; }
+      .small { font-size: 12px; color: var(--muted); }
+      input::placeholder, textarea::placeholder { color: var(--muted); opacity: .9; }
+      select { color: var(--text); }
+      .tasks { margin-top: 8px; max-height: 480px; overflow-y: auto; padding-bottom: 8px; }
+      .task { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 10px; background: var(--elevated); box-shadow: var(--shadow); transition: transform .06s ease, box-shadow .2s ease; }
+      .task:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(9,30,66,0.12), 0 0 1px rgba(9,30,66,0.12); }
+      .task h4 { margin: 0 0 6px; font-size: 14px; display: flex; gap: 6px; align-items: center; font-weight: 600; }
+      .meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+      .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+      .chip { font-size: 11px; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--border); background: #F4F5F7; color: #42526E; }
+      .chip--prio-high { background: #FFEBE6; border-color: #FFBDAD; color: #BF2600; }
+      .chip--prio-normal { background: #EAE6FF; border-color: #C0B6F2; color: #403294; }
+      .chip--prio-low { background: #E3FCEF; border-color: #ABF5D1; color: #006644; }
+      .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+      .btn { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 12px; box-shadow: var(--shadow); color: var(--text); }
+      .btn:hover { background: #F4F5F7; }
+      .btn--primary { background: var(--primary); color: white; border-color: var(--primary); }
+      .btn--primary:hover { background: var(--primary-hover); }
+      .btn--danger { border-color: var(--danger); color: var(--danger); }
+      .btn--danger:hover { background: #FFEBE6; }
+      .hidden { display: none; }
+      .tag { background: #E9F2FF; color: #0747A6; padding: 2px 8px; margin-right: 4px; border-radius: 999px; font-size: 11px; border: 1px solid #CCE0FF; }
+      .toolbar { display: flex; gap: 10px; margin: 6px 0 12px; }
+      .toolbar input, .toolbar select { margin: 0; }
+      .empty { text-align: center; color: var(--muted); padding: 28px 10px; border: 1px dashed var(--border); border-radius: var(--radius); background: #F7F8F9; box-shadow: var(--shadow); }
+      .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; border: 1px solid var(--border); border-bottom-width: 2px; padding: 1px 5px; border-radius: 6px; background: #FFF; }
+      .section-title { font-size: 12px; color: var(--muted-strong); margin: 10px 0 6px; padding-left: 4px; }
+      .task--overdue { border-left: 3px solid var(--danger); background: #FFF5F5; }
+      @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(4px);} to { opacity: 1; transform: translateY(0);} }
+      .task { animation: fadeSlideIn .18s ease both; }
+
+      /* 毎週の曜日選択（チェックボックスと文字の中央揃え） */
+      #weeklyOpts > div {
+        /* 行全体を中央に配置 */
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+      }
+      #weeklyOpts > div > label {
+        /* ラベル内でチェックボックスと文字を中央に揃える */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        line-height: 1;
+      }
+      #weeklyOpts > div > label > input[type="checkbox"] {
+        /* 余白のばらつきを抑え、垂直位置を安定させる */
+        margin: 0;
+        vertical-align: middle;
+      }
+
+      /* ダークモード（ブルーブラック系） */
+      @media (prefers-color-scheme: dark) {
+        body:not([data-theme="light"]) {
+          --bg: #0B1220;
+          --surface: #0F172A;
+          --elevated: #121B30;
+          --text: #E5F0FF;
+          --muted: #B6C8E5;
+          --muted-strong: #D2DEF6;
+          --border: #1F2A44;
+          --primary: #5B9EFF;
+          --primary-hover: #4A8BFF;
+          --danger: #FF7A70;
+          --danger-hover: #E66B62;
+        }
+      }
+      /* 手動ダーク適用（最優先） */
+      body[data-theme="dark"] {
+        --bg: #0B1220;
+        --surface: #0F172A;
+        --elevated: #121B30;
+        --text: #E5F0FF;
+        --muted: #B6C8E5;
+        --muted-strong: #D2DEF6;
+        --border: #1F2A44;
+        --primary: #5B9EFF;
+        --primary-hover: #4A8BFF;
+        --danger: #FF7A70;
+        --danger-hover: #E66B62;
+      }
+      body[data-theme="dark"] header { background: linear-gradient(180deg, #0F172A 0%, #0B1220 100%); border-bottom-color: #1F2A44; }
+      body[data-theme="dark"] header a { color: var(--primary); }
+      body[data-theme="dark"] .btn { background: #182136; border-color: #2A3B5F; color: #E5F0FF; }
+      body[data-theme="dark"] .btn:hover { background: #1F2A44; }
+      body[data-theme="dark"] .chip { background: #121B30; border-color: #1F2A44; color: #C7D1DB; }
+      body[data-theme="dark"] .chip--prio-high { background: #2B1D1F; border-color: #5F2C30; color: #FF9C8B; }
+      body[data-theme="dark"] .chip--prio-normal { background: #1E2233; border-color: #2E3A5F; color: #B8C7FF; }
+      body[data-theme="dark"] .chip--prio-low { background: #0E2A21; border-color: #1E4D3B; color: #9ADBC0; }
+      body[data-theme="dark"] .tag { background: #1E2A44; border-color: #2E3A5F; color: #B8C7FF; }
+      body[data-theme="dark"] .task--overdue { background: #1D1415; }
+      body[data-theme="dark"] .empty { background: #0F172A; }
+      body[data-theme="dark"] form input, body[data-theme="dark"] form select, body[data-theme="dark"] form textarea { background: #121B30; color: var(--text); border-color: #1F2A44; }
+      body[data-theme="dark"] input::placeholder, body[data-theme="dark"] textarea::placeholder { color: var(--muted); opacity: .95; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <span class="title">Todorima – Optimal Reminde</span>
+      <a href="../options/options.html" target="_blank">設定</a>
+    </header>
+
+    <div class="nav">
+      <button class="tab" id="tab-list" aria-selected="true">一覧</button>
+      <button class="tab" id="tab-add">追加</button>
+    </div>
+
+    <section class="container hidden" id="view-add">
+      <form id="taskForm" autocomplete="off">
+        <input type="hidden" id="taskId" />
+        <input id="title" placeholder="タイトル" required />
+        <textarea id="note" rows="2" placeholder="メモ"></textarea>
+        <div class="row">
+          <input id="due" type="datetime-local" required />
+          <select id="priority">
+            <option value="normal">通常</option>
+            <option value="high">高</option>
+            <option value="low">低</option>
+          </select>
+        </div>
+        <input id="tags" placeholder="タグ（カンマ区切り）" />
+        <div class="row">
+          <select id="repeatType">
+            <option value="none">繰り返しなし</option>
+            <option value="daily">毎日</option>
+            <option value="weekly">毎週</option>
+            <option value="monthly">毎月</option>
+          </select>
+          <input id="interval" type="number" min="1" value="1" title="間隔" />
+        </div>
+        <div id="weeklyOpts" class="small hidden">
+          <label>曜日:</label>
+          <div>
+            <label><input type="checkbox" value="0">日</label>
+            <label><input type="checkbox" value="1">月</label>
+            <label><input type="checkbox" value="2">火</label>
+            <label><input type="checkbox" value="3">水</label>
+            <label><input type="checkbox" value="4">木</label>
+            <label><input type="checkbox" value="5">金</label>
+            <label><input type="checkbox" value="6">土</label>
+          </div>
+        </div>
+        <div id="monthlyOpts" class="small hidden">
+          <label>日付:</label>
+          <input id="byDay" type="number" min="1" max="31" />
+        </div>
+        <div class="row">
+          <button class="btn btn--primary" type="submit" id="saveBtn">保存</button>
+          <button class="btn" type="button" id="resetBtn">リセット</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="container" id="view-list">
+      <div class="toolbar row">
+        <input id="q" placeholder="検索（タイトル・タグ）" />
+        <select id="sort">
+          <option value="due">期日昇順</option>
+          <option value="priority">優先度</option>
+        </select>
+      </div>
+      <section class="tasks" id="list"></section>
+    </section>
+
+    <script type="module" src="./popup.js"></script>
+  </body>
+  </html>

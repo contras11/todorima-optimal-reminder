@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Todorima – Optimal Reminde",
+  "version": "0.1.0",
+  "description": "単発/繰り返し/スヌーズ/完了/一覧/検索/同期/スリープ中に過ぎた予定を復帰後にお知らせするリマインダー。ストア非利用環境でもデベロッパーモードで利用可能",
+  "permissions": ["alarms", "notifications", "storage", "idle"],
+  "background": {
+    "service_worker": "service_worker.js",
+    "type": "module"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/icon16.png",
+        "assets/icon48.png",
+        "assets/icon128.png"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "action": {
+    "default_title": "Todorima – Optimal Reminde",
+    "default_popup": "popup/popup.html"
+  },
+  "options_page": "options/options.html",
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  }
+}
