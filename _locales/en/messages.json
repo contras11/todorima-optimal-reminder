@@ -108,4 +108,6 @@
   "summaryTitle": { "message": "Missed reminders during sleep" },
   "summaryMessage": { "message": "$1 reminder(s) became due while asleep. Open the list to review." },
   "quickTask": { "message": "Quick Task" }
+,
+  "supportLink": { "message": "☕ Support this project" }
 }

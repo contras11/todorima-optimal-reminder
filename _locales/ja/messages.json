@@ -108,4 +108,6 @@
   "summaryTitle": { "message": "スリープ中に過ぎた予定のお知らせ" },
   "summaryMessage": { "message": "スリープ中に $1 件の予定が期限を迎えました。拡張の一覧で確認できます。" },
   "quickTask": { "message": "クイックタスク" }
+,
+  "supportLink": { "message": "☕ サポートはこちら" }
 }
