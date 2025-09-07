@@ -1,5 +1,5 @@
 {
-  "extDescription": { "message": "A lightweight reminder for one-off and recurring tasks with snooze, complete, list, search, sync, and catch-up notifications after sleep." },
+  "extDescription": { "message": "Reminders for one-off and recurring tasks with snooze, complete, list, search, sync, and catch-up after sleep." },
   "actionTitle": { "message": "Todorima – Optimal Reminder" },
 
   "settings": { "message": "Settings" },
