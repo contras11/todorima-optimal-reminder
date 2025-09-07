@@ -6,4 +6,3 @@
 - idle: Used to detect when the user becomes active again to run catch-up logic for items that became due during sleep.
 
 No additional or optional host permissions are requested.
-
