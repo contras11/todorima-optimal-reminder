@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -34,6 +34,9 @@
       .container { padding: 10px; }
       form input, form select, form textarea { width: 100%; box-sizing: border-box; margin: 6px 0 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); box-shadow: inset 0 1px 0 rgba(9,30,66,.04); }
       form input:focus, form select:focus, form textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(38,132,255,0.2); }
+      /* ツールバーの入力/セレクトもフォームと同じ見た目に */
+      .toolbar input, .toolbar select { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); box-shadow: inset 0 1px 0 rgba(9,30,66,.04); }
+      .toolbar input:focus, .toolbar select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(38,132,255,0.2); }
       textarea { resize: vertical; }
       .row { display: flex; gap: 10px; }
       .row > * { flex: 1; }
@@ -61,7 +64,7 @@
       .tag { background: #E9F2FF; color: #0747A6; padding: 2px 8px; margin-right: 4px; border-radius: 999px; font-size: 11px; border: 1px solid #CCE0FF; }
       .toolbar { display: flex; gap: 10px; margin: 6px 0 12px; }
       .toolbar input, .toolbar select { margin: 0; }
-      .empty { text-align: center; color: var(--muted); padding: 28px 10px; border: 1px dashed var(--border); border-radius: var(--radius); background: #F7F8F9; box-shadow: var(--shadow); }
+      .empty { text-align: center; color: var(--muted); padding: 28px 10px; border: 1px dashed var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
       .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; border: 1px solid var(--border); border-bottom-width: 2px; padding: 1px 5px; border-radius: 6px; background: #FFF; }
       .section-title { font-size: 12px; color: var(--muted-strong); margin: 10px 0 6px; padding-left: 4px; }
       .task--overdue { border-left: 3px solid var(--danger); background: #FFF5F5; }
@@ -95,41 +98,53 @@
           --bg: #0B1220;
           --surface: #0F172A;
           --elevated: #121B30;
-          --text: #E5F0FF;
-          --muted: #B6C8E5;
-          --muted-strong: #D2DEF6;
-          --border: #1F2A44;
-          --primary: #5B9EFF;
-          --primary-hover: #4A8BFF;
-          --danger: #FF7A70;
-          --danger-hover: #E66B62;
+          --text: #F9FBFF;           /* 主要テキストをさらに明るく */
+          --muted: #D7E4FF;          /* 補助テキストも明るく */
+          --muted-strong: #FFFFFF;   /* セクション見出しなど */
+          --border: #233455;
+          --primary: #73AEFF;
+          --primary-hover: #5FA0FF;
+          --danger: #FF8D84;
+          --danger-hover: #E97E75;
         }
+        /* システムのダーク時のヘッダー配色（設定画面と揃える） */
+        body:not([data-theme="light"]) header { background: linear-gradient(180deg, #0F172A 0%, #0B1220 100%); border-bottom-color: #1F2A44; }
+        body:not([data-theme="light"]) header .title { color: var(--text); }
+        body:not([data-theme="light"]) header a { color: var(--primary); }
+        /* ツールバーの入力もダーク配色に */
+        body:not([data-theme="light"]) .toolbar input, body:not([data-theme="light"]) .toolbar select { background: #121B30; color: var(--text); border-color: #1F2A44; }
       }
       /* 手動ダーク適用（最優先） */
       body[data-theme="dark"] {
         --bg: #0B1220;
         --surface: #0F172A;
         --elevated: #121B30;
-        --text: #E5F0FF;
-        --muted: #B6C8E5;
-        --muted-strong: #D2DEF6;
-        --border: #1F2A44;
-        --primary: #5B9EFF;
-        --primary-hover: #4A8BFF;
-        --danger: #FF7A70;
-        --danger-hover: #E66B62;
+        --text: #F9FBFF;            /* 主要テキストをさらに明るく */
+        --muted: #D7E4FF;           /* 補助テキストも明るく */
+        --muted-strong: #FFFFFF;    /* セクション見出しなど */
+        --border: #233455;
+        --primary: #73AEFF;
+        --primary-hover: #5FA0FF;
+        --danger: #FF8D84;
+        --danger-hover: #E97E75;
       }
       body[data-theme="dark"] header { background: linear-gradient(180deg, #0F172A 0%, #0B1220 100%); border-bottom-color: #1F2A44; }
       body[data-theme="dark"] header a { color: var(--primary); }
-      body[data-theme="dark"] .btn { background: #182136; border-color: #2A3B5F; color: #E5F0FF; }
+      body[data-theme="dark"] .btn { background: #182136; border-color: #2A3B5F; color: var(--text); }
       body[data-theme="dark"] .btn:hover { background: #1F2A44; }
-      body[data-theme="dark"] .chip { background: #121B30; border-color: #1F2A44; color: #C7D1DB; }
+      body[data-theme="dark"] .chip { background: #141F36; border-color: #223456; color: #E6EFFF; }
+      body[data-theme="dark"] .section-title { color: var(--muted-strong); }
+      body[data-theme="dark"] .task h4 { color: var(--text); }
+      body[data-theme="dark"] label { color: var(--text); }
+      body[data-theme="dark"] .task { border-color: #1F2A44; }
+      body[data-theme="dark"] .task:hover { box-shadow: 0 4px 10px rgba(7,15,30,0.4), 0 0 1px rgba(7,15,30,0.4); }
+      body[data-theme="dark"] .toolbar input, body[data-theme="dark"] .toolbar select { background: #121B30; color: var(--text); border-color: #1F2A44; }
       body[data-theme="dark"] .chip--prio-high { background: #2B1D1F; border-color: #5F2C30; color: #FF9C8B; }
       body[data-theme="dark"] .chip--prio-normal { background: #1E2233; border-color: #2E3A5F; color: #B8C7FF; }
       body[data-theme="dark"] .chip--prio-low { background: #0E2A21; border-color: #1E4D3B; color: #9ADBC0; }
       body[data-theme="dark"] .tag { background: #1E2A44; border-color: #2E3A5F; color: #B8C7FF; }
       body[data-theme="dark"] .task--overdue { background: #1D1415; }
-      body[data-theme="dark"] .empty { background: #0F172A; }
+      body[data-theme="dark"] .empty { background: var(--surface); }
       body[data-theme="dark"] form input, body[data-theme="dark"] form select, body[data-theme="dark"] form textarea { background: #121B30; color: var(--text); border-color: #1F2A44; }
       body[data-theme="dark"] input::placeholder, body[data-theme="dark"] textarea::placeholder { color: var(--muted); opacity: .95; }
     </style>
@@ -137,66 +152,66 @@
   <body>
     <header>
       <span class="title">Todorima – Optimal Reminder</span>
-      <a href="../options/options.html" target="_blank">設定</a>
+      <a href="../options/options.html" target="_blank" data-i18n="settings">Settings</a>
     </header>
 
     <div class="nav">
-      <button class="tab" id="tab-list" aria-selected="true">一覧</button>
-      <button class="tab" id="tab-add">追加</button>
+      <button class="tab" type="button" id="tab-list" aria-selected="true" data-i18n="tabList">List</button>
+      <button class="tab" type="button" id="tab-add" data-i18n="tabAdd">Add</button>
     </div>
 
     <section class="container hidden" id="view-add">
       <form id="taskForm" autocomplete="off">
         <input type="hidden" id="taskId" />
-        <input id="title" placeholder="タイトル" required />
-        <textarea id="note" rows="2" placeholder="メモ"></textarea>
+        <input id="title" data-i18n-placeholder="titlePlaceholder" placeholder="Title" required />
+        <textarea id="note" rows="2" data-i18n-placeholder="notePlaceholder" placeholder="Note"></textarea>
         <div class="row">
           <input id="due" type="datetime-local" required />
           <select id="priority">
-            <option value="normal">通常</option>
-            <option value="high">高</option>
-            <option value="low">低</option>
+            <option value="normal" data-i18n="priorityNormal">Normal</option>
+            <option value="high" data-i18n="priorityHigh">High</option>
+            <option value="low" data-i18n="priorityLow">Low</option>
           </select>
         </div>
-        <input id="tags" placeholder="タグ（カンマ区切り）" />
+        <input id="tags" data-i18n-placeholder="tagsPlaceholder" placeholder="Tags (comma-separated)" />
         <div class="row">
           <select id="repeatType">
-            <option value="none">繰り返しなし</option>
-            <option value="daily">毎日</option>
-            <option value="weekly">毎週</option>
-            <option value="monthly">毎月</option>
+            <option value="none" data-i18n="repeatNone">No repeat</option>
+            <option value="daily" data-i18n="repeatDaily">Daily</option>
+            <option value="weekly" data-i18n="repeatWeekly">Weekly</option>
+            <option value="monthly" data-i18n="repeatMonthly">Monthly</option>
           </select>
-          <input id="interval" type="number" min="1" value="1" title="間隔" />
+          <input id="interval" type="number" min="1" value="1" data-i18n-title="labelInterval" title="Interval" />
         </div>
         <div id="weeklyOpts" class="small hidden">
-          <label>曜日:</label>
+          <label data-i18n="labelWeekdays">Weekdays:</label>
           <div>
-            <label><input type="checkbox" value="0">日</label>
-            <label><input type="checkbox" value="1">月</label>
-            <label><input type="checkbox" value="2">火</label>
-            <label><input type="checkbox" value="3">水</label>
-            <label><input type="checkbox" value="4">木</label>
-            <label><input type="checkbox" value="5">金</label>
-            <label><input type="checkbox" value="6">土</label>
+            <label><input type="checkbox" value="0"><span data-i18n="weekdaySun">Sun</span></label>
+            <label><input type="checkbox" value="1"><span data-i18n="weekdayMon">Mon</span></label>
+            <label><input type="checkbox" value="2"><span data-i18n="weekdayTue">Tue</span></label>
+            <label><input type="checkbox" value="3"><span data-i18n="weekdayWed">Wed</span></label>
+            <label><input type="checkbox" value="4"><span data-i18n="weekdayThu">Thu</span></label>
+            <label><input type="checkbox" value="5"><span data-i18n="weekdayFri">Fri</span></label>
+            <label><input type="checkbox" value="6"><span data-i18n="weekdaySat">Sat</span></label>
           </div>
         </div>
         <div id="monthlyOpts" class="small hidden">
-          <label>日付:</label>
+          <label data-i18n="labelDayOfMonth">Day of month:</label>
           <input id="byDay" type="number" min="1" max="31" />
         </div>
         <div class="row">
-          <button class="btn btn--primary" type="submit" id="saveBtn">保存</button>
-          <button class="btn" type="button" id="resetBtn">リセット</button>
+          <button class="btn btn--primary" type="submit" id="saveBtn" data-i18n="save">Save</button>
+          <button class="btn" type="button" id="resetBtn" data-i18n="reset">Reset</button>
         </div>
       </form>
     </section>
 
     <section class="container" id="view-list">
       <div class="toolbar row">
-        <input id="q" placeholder="検索（タイトル・タグ）" />
+        <input id="q" data-i18n-placeholder="searchPlaceholderWithTags" placeholder="Search (title, tags)" />
         <select id="sort">
-          <option value="due">期日昇順</option>
-          <option value="priority">優先度</option>
+          <option value="due" data-i18n="sortDueAsc">Due (asc)</option>
+          <option value="priority" data-i18n="sortPriority">Priority</option>
         </select>
       </div>
       <section class="tasks" id="list"></section>

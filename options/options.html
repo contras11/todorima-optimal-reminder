@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Todorima – Optimal Reminder — 設定</title>
+    <title data-i18n="optionsTitle">Todorima – Optimal Reminder — Settings</title>
     <style>
       :root {
         --bg: #F7F8FA;
@@ -77,68 +77,77 @@
   </head>
   <body>
     <header>
-      <h2>Todorima – Optimal Reminder — 設定</h2>
-      <div class="small">通知やスヌーズ、復帰後の再通知などの動作をカスタマイズできます。</div>
+      <h2 data-i18n="optionsTitle">Todorima – Optimal Reminder — Settings</h2>
+      <div class="small" data-i18n="optionsDesc">Customize notifications, snooze, and catch-up behavior after sleep.</div>
     </header>
     <main>
       <form id="optForm">
         <div id="toast" class="toast" aria-live="polite" style="display:none"></div>
         <div class="card">
-          <h3>通知</h3>
-          <label>通知を自動で閉じない</label>
-          <div class="switch"><input id="requireInteraction" type="checkbox" /><span class="small">オンにすると、通知を手動で閉じるまで表示を維持します（OSにより無視される場合あり）。</span></div>
-          <label style="margin-top:12px;">スヌーズ機能を有効にする</label>
-          <div class="switch"><input id="enableSnooze" type="checkbox" checked /><span class="small">オフにすると通知や一覧からスヌーズ操作が非表示になります。</span></div>
+          <h3 data-i18n="secNotifications">Notifications</h3>
+          <label data-i18n="labelRequireInteraction">Do not auto-close notifications</label>
+          <div class="switch"><input id="requireInteraction" type="checkbox" /><span class="small" data-i18n="hintRequireInteraction">Keeps notifications visible until you dismiss them (may be ignored by OS).</span></div>
+          <label style="margin-top:12px;" data-i18n="labelEnableSnooze">Enable snooze</label>
+          <div class="switch"><input id="enableSnooze" type="checkbox" checked /><span class="small" data-i18n="hintEnableSnooze">If off, Snooze buttons are hidden in notifications and lists.</span></div>
         </div>
 
         <div class="card">
-          <h3>スヌーズ</h3>
-          <label>既定スヌーズ（分）</label>
+          <h3 data-i18n="secSnooze">Snooze</h3>
+          <label data-i18n="labelDefaultSnoozeMin">Default snooze (minutes)</label>
           <input id="defaultSnoozeMin" type="number" min="1" value="10" />
         </div>
 
         <div class="card">
-          <h3>予定の表示</h3>
-          <label>テーマ</label>
+          <h3 data-i18n="secDisplay">Display</h3>
+          <label data-i18n="labelTheme">Theme</label>
           <select id="themeMode">
-            <option value="system">システムに合わせる</option>
-            <option value="light">ライト</option>
-            <option value="dark">ダーク</option>
+            <option value="system" data-i18n="themeSystem">Follow system</option>
+            <option value="light" data-i18n="themeLight">Light</option>
+            <option value="dark" data-i18n="themeDark">Dark</option>
           </select>
+          <label style="margin-top:8px;" data-i18n="labelShowTags">Enable tags</label>
+          <div class="switch"><input id="showTags" type="checkbox" checked /><span class="small" data-i18n="hintShowTags">If off, hides tag fields and tag search.</span></div>
 
-          <label style="margin-top:8px;">タグ機能を有効にする</label>
-          <div class="switch"><input id="showTags" type="checkbox" checked /><span class="small">オフにすると、一覧のタグ表示と入力欄、タグ検索を非表示にします。</span></div>
+          <label style="margin-top:8px;" data-i18n="labelCompletedCollapsed">Collapse Completed by default</label>
+          <div class="switch"><input id="completedCollapsed" type="checkbox" checked /><span class="small" data-i18n="hintCompletedCollapsed">If on, the Completed section is collapsed initially.</span></div>
 
-          <label style="margin-top:8px;">完了セクションを折りたたむ（既定）</label>
-          <div class="switch"><input id="completedCollapsed" type="checkbox" checked /><span class="small">オンにすると、一覧の完了セクションが折りたたまれた状態で表示されます。</span></div>
-
-          <label>週の開始曜日</label>
+          <label data-i18n="labelWeekStartsOn">Week starts on</label>
           <select id="weekStartsOn">
-            <option value="0">日曜</option>
-            <option value="1">月曜</option>
+            <option value="0" data-i18n="sunday">Sunday</option>
+            <option value="1" data-i18n="monday">Monday</option>
           </select>
         </div>
 
         <div class="card">
-          <h3>スリープ復帰時の再通知</h3>
-          <label>復帰後に通知し直す対象期間（時間）</label>
-          <input id="catchupHours" type="number" min="1" value="12" />
-          <div class="small">PCのスリープ等で不在の間に、この時間内に期限を過ぎたタスクを復帰後に通知します。</div>
+          <h3 data-i18n="secLanguage">Language</h3>
+          <label data-i18n="labelLanguage">UI language</label>
+          <select id="language">
+            <option value="en" data-i18n="languageEnglish">English</option>
+            <option value="ja" data-i18n="languageJapanese">Japanese</option>
+            <option value="auto" data-i18n="languageAuto">Auto (Browser)</option>
+          </select>
+        </div>
 
-          <label>復帰後に個別通知する最大件数</label>
+        <div class="card">
+          <h3 data-i18n="secCatchup">Catch-up After Sleep</h3>
+          <label data-i18n="labelCatchupHours">Look-back window (hours)</label>
+          <input id="catchupHours" type="number" min="1" value="12" />
+          <div class="small" data-i18n="hintCatchupHours">On resume, notify tasks that became due within this window while away.</div>
+
+          <label data-i18n="labelMaxIndividualCatchup">Max individual catch-up notifications</label>
           <input id="maxIndividualCatchup" type="number" min="0" value="5" />
         </div>
 
         <div class="card">
-          <h3>データ管理</h3>
-          <label>完了タスクの自動削除（保持日数）</label>
+          <h3 data-i18n="secData">Data Management</h3>
+          <label data-i18n="labelCompletedRetentionDays">Auto-delete completed (days)</label>
           <input id="completedRetentionDays" type="number" min="0" value="30" />
-          <div class="small">0にすると自動削除を無効化します。既定は30日。</div>
+          <div class="small" data-i18n="hintCompletedRetentionDays">Set 0 to disable. Default is 30 days.</div>
         </div>
 
         <div class="card" style="display:flex; justify-content: space-between; align-items: center; gap: 12px;">
-          <div class="small">設定は `chrome.storage.sync` に保存され、サインインしているブラウザ間で同期されます。</div>
-          <button class="btn btn--primary" type="submit">保存</button>
+          <div class="small" data-i18n="saveToSyncHint">Settings are saved in chrome.storage.sync and synced across signed-in browsers.</div>
+          <button class="btn btn--primary" type="submit" data-i18n="saveBtn">Save</button>
         </div>
         <div class="small" id="status"></div>
       </form>

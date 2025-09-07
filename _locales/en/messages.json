@@ -1,0 +1,111 @@
+{
+  "extDescription": { "message": "A lightweight reminder for one-off and recurring tasks with snooze, complete, list, search, sync, and catch-up notifications after sleep." },
+  "actionTitle": { "message": "Todorima – Optimal Reminder" },
+
+  "settings": { "message": "Settings" },
+  "tabList": { "message": "List" },
+  "tabAdd": { "message": "Add" },
+
+  "titlePlaceholder": { "message": "Title" },
+  "notePlaceholder": { "message": "Note" },
+  "tagsPlaceholder": { "message": "Tags (comma-separated)" },
+
+  "priorityNormal": { "message": "Normal" },
+  "priorityHigh": { "message": "High" },
+  "priorityLow": { "message": "Low" },
+
+  "repeatNone": { "message": "No repeat" },
+  "repeatDaily": { "message": "Daily" },
+  "repeatWeekly": { "message": "Weekly" },
+  "repeatMonthly": { "message": "Monthly" },
+
+  "labelWeekdays": { "message": "Weekdays:" },
+  "labelDayOfMonth": { "message": "Day of month:" },
+  "labelInterval": { "message": "Interval" },
+  "weekdaySun": { "message": "Sun" },
+  "weekdayMon": { "message": "Mon" },
+  "weekdayTue": { "message": "Tue" },
+  "weekdayWed": { "message": "Wed" },
+  "weekdayThu": { "message": "Thu" },
+  "weekdayFri": { "message": "Fri" },
+  "weekdaySat": { "message": "Sat" },
+
+  "save": { "message": "Save" },
+  "reset": { "message": "Reset" },
+  "update": { "message": "Update" },
+
+  "searchPlaceholderWithTags": { "message": "Search (title, tags)" },
+  "searchPlaceholderTitleOnly": { "message": "Search (title)" },
+
+  "sortDueAsc": { "message": "Due (asc)" },
+  "sortPriority": { "message": "Priority" },
+
+  "sectionOverdue": { "message": "Overdue" },
+  "sectionToday": { "message": "Today" },
+  "sectionTomorrow": { "message": "Tomorrow" },
+  "sectionThisWeek": { "message": "This Week" },
+  "sectionLater": { "message": "Later" },
+
+  "actionDone": { "message": "Done" },
+  "actionSnooze": { "message": "Snooze" },
+  "actionEdit": { "message": "Edit" },
+  "actionDelete": { "message": "Delete" },
+
+  "labelDueAt": { "message": "Due:" },
+  "labelDoneAt": { "message": "Done:" },
+  "completed": { "message": "Completed" },
+  "emptyNoTasks": { "message": "No tasks yet. Use the Add tab to create one." },
+  "addNow": { "message": "Add one now" },
+
+  "optionsTitle": { "message": "Todorima – Optimal Reminder — Settings" },
+  "optionsDesc": { "message": "Customize notifications, snooze, and catch-up behavior after sleep." },
+
+  "secNotifications": { "message": "Notifications" },
+  "labelRequireInteraction": { "message": "Do not auto-close notifications" },
+  "hintRequireInteraction": { "message": "Keeps notifications visible until you dismiss them (may be ignored by OS)." },
+  "labelEnableSnooze": { "message": "Enable snooze" },
+  "hintEnableSnooze": { "message": "If off, Snooze buttons are hidden in notifications and lists." },
+
+  "secSnooze": { "message": "Snooze" },
+  "labelDefaultSnoozeMin": { "message": "Default snooze (minutes)" },
+
+  "secDisplay": { "message": "Display" },
+  "labelTheme": { "message": "Theme" },
+  "themeSystem": { "message": "Follow system" },
+  "themeLight": { "message": "Light" },
+  "themeDark": { "message": "Dark" },
+  "labelShowTags": { "message": "Enable tags" },
+  "hintShowTags": { "message": "If off, hides tag fields and tag search." },
+  "labelCompletedCollapsed": { "message": "Collapse Completed by default" },
+  "hintCompletedCollapsed": { "message": "If on, the Completed section is collapsed initially." },
+  "labelWeekStartsOn": { "message": "Week starts on" },
+  "sunday": { "message": "Sunday" },
+  "monday": { "message": "Monday" },
+
+  "secCatchup": { "message": "Catch-up After Sleep" },
+  "labelCatchupHours": { "message": "Look-back window (hours)" },
+  "hintCatchupHours": { "message": "On resume, notify tasks that became due within this window while away." },
+  "labelMaxIndividualCatchup": { "message": "Max individual catch-up notifications" },
+
+  "secData": { "message": "Data Management" },
+  "labelCompletedRetentionDays": { "message": "Auto-delete completed (days)" },
+  "hintCompletedRetentionDays": { "message": "Set 0 to disable. Default is 30 days." },
+  "saveToSyncHint": { "message": "Settings are saved in chrome.storage.sync and synced across signed-in browsers." },
+
+  "secLanguage": { "message": "Language" },
+  "labelLanguage": { "message": "UI language" },
+  "languageAuto": { "message": "Auto (Browser)" },
+  "languageEnglish": { "message": "English" },
+  "languageJapanese": { "message": "Japanese" },
+
+  "saveToast": { "message": "Saved ✓" },
+  "saveDoneBtn": { "message": "Saved ✓" },
+  "saveBtn": { "message": "Save" },
+
+  "notifTitle": { "message": "Todorima – Optimal Reminder | Reminder: $1" },
+  "notifBtnDone": { "message": "Done" },
+  "notifBtnSnooze": { "message": "Snooze (+$1 min)" },
+  "summaryTitle": { "message": "Missed reminders during sleep" },
+  "summaryMessage": { "message": "$1 reminder(s) became due while asleep. Open the list to review." },
+  "quickTask": { "message": "Quick Task" }
+}

@@ -4,6 +4,7 @@
 // - 通知アクション：完了/スヌーズ
 
 import { nextOccurrence, fmtDateTime, MIN, DAY } from './utils/time.js';
+import { createI18n } from './utils/i18n.js';
 
 /** @typedef {import('./utils/time.js').Task} Task */
 
@@ -30,6 +31,8 @@ const DEFAULT_SETTINGS = {
   showTags: true,
   /** @type {number} 完了タスクの自動削除(保持日数)。0以下で無効 */
   completedRetentionDays: 30,
+  /** @type {'en'|'ja'|'auto'} UI 言語（既定: Auto） */
+  language: 'auto',
 };
 
 // chrome.storage ラッパ（Promise化）
@@ -84,22 +87,23 @@ async function showNotification(task) {
   const notifId = `task::${task.id}::${Date.now()}`;
   const whenText = fmtDateTime(task.dueAt);
   const icon = chrome.runtime.getURL('assets/icon128.png');
+  const { t } = await createI18n();
   try {
     /** @type {chrome.notifications.NotificationOptions<true>} */
     const opts = {
       type: 'basic',
       iconUrl: icon,
       // 製品名を通知タイトルに併記（ブランド明示）
-      title: `Todorima – Optimal Reminder | リマインダー: ${task.title}`,
+      title: t('notifTitle', task.title),
       message: task.note ? `${task.note}\n(${whenText})` : `${whenText}`,
       requireInteraction: !!settings.notificationRequireInteraction,
       priority: 2,
     };
     // ボタンは条件付きで付与
     /** @type {chrome.notifications.ButtonOptions[]} */
-    const buttons = [{ title: '完了' }];
+    const buttons = [{ title: t('notifBtnDone') }];
     if (settings.enableSnooze) {
-      buttons.push({ title: `スヌーズ(+${settings.defaultSnoozeMin}分)` });
+      buttons.push({ title: t('notifBtnSnooze', String(settings.defaultSnoozeMin)) });
     }
     if (buttons.length) opts.buttons = buttons;
     await chrome.notifications.create(notifId, opts);
@@ -112,13 +116,13 @@ async function showNotification(task) {
         type: 'basic',
         iconUrl: 'assets/icon128.png',
         // 再試行時も同様に製品名を併記
-        title: `Todorima – Optimal Reminder | リマインダー: ${task.title}`,
+        title: t('notifTitle', task.title),
         message: task.note ? `${task.note}\n(${whenText})` : `${whenText}`,
         requireInteraction: !!settings.notificationRequireInteraction,
         priority: 2,
       };
-      const buttons2 = [{ title: '完了' }];
-      if (settings.enableSnooze) buttons2.push({ title: `スヌーズ(+${settings.defaultSnoozeMin}分)` });
+      const buttons2 = [{ title: t('notifBtnDone') }];
+      if (settings.enableSnooze) buttons2.push({ title: t('notifBtnSnooze', String(settings.defaultSnoozeMin)) });
       if (buttons2.length) opts2.buttons = buttons2;
       await chrome.notifications.create(notifId, opts2);
     } catch (e2) {
@@ -130,12 +134,13 @@ async function showNotification(task) {
 async function showSummaryNotification(count) {
   const notifId = `summary::${Date.now()}`;
   const icon = chrome.runtime.getURL('assets/icon128.png');
+  const { t } = await createI18n();
   try {
     await chrome.notifications.create(notifId, {
       type: 'basic',
       iconUrl: icon,
-      title: 'スリープ中に過ぎた予定のお知らせ',
-      message: `${count}件の予定がスリープ中に期限を迎えました。拡張の一覧で確認できます。`,
+      title: t('summaryTitle'),
+      message: t('summaryMessage', String(count)),
       requireInteraction: false,
       priority: 1,
     });
@@ -245,7 +250,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
         const now = Date.now();
         tasks.push(/** @type {Task} */({
           id: genId(),
-          title: msg.title || 'クイックタスク',
+          title: msg.title || (await createI18n()).t('quickTask'),
           note: msg.note || '',
           dueAt: now + 5 * MIN,
           baseAt: now + 5 * MIN,

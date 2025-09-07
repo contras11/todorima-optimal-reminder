@@ -1,4 +1,5 @@
-// オプション画面：設定の保存と読込
+// オプション画面：設定の保存と読込（i18n 対応）
+import { createI18n, applyI18nDom } from '../utils/i18n.js';
 
 const storage = {
   syncGet: (keys) => new Promise((resolve) => chrome.storage.sync.get(keys, resolve)),
@@ -16,6 +17,8 @@ const DEFAULTS = {
   completedCollapsed: true,
   showTags: true,
   completedRetentionDays: 30,
+  // 既定言語は Auto（ブラウザ）
+  language: 'auto',
 };
 
 const $ = (sel) => /** @type {HTMLElement} */(document.querySelector(sel));
@@ -36,8 +39,11 @@ const retentionEl = /** @type {HTMLInputElement} */(document.getElementById('com
 const showTagsEl = /** @type {HTMLInputElement} */(document.getElementById('showTags'));
 const statusEl = $('#status');
 const toastEl = /** @type {HTMLDivElement} */(document.getElementById('toast'));
+const langEl = /** @type {HTMLSelectElement} */(document.getElementById('language'));
 
 async function load() {
+  const { t } = await createI18n();
+  await applyI18nDom(t);
   const { settings } = await storage.syncGet(['settings']);
   const s = { ...DEFAULTS, ...(settings || {}) };
   snoozeEl.value = String(s.defaultSnoozeMin);
@@ -51,10 +57,12 @@ async function load() {
   applyThemePreview(s.themeMode || 'system');
   if (retentionEl) retentionEl.value = String(Math.max(0, s.completedRetentionDays ?? 30));
   if (showTagsEl) showTagsEl.checked = s.showTags !== false;
+  if (langEl) langEl.value = s.language || 'auto';
 }
 
 async function save(e) {
   e.preventDefault();
+  const { t } = await createI18n();
   const s = {
     defaultSnoozeMin: Math.max(1, parseInt(snoozeEl.value || '10', 10)),
     enableSnooze: !!(enableSnoozeEl && enableSnoozeEl.checked),
@@ -66,19 +74,23 @@ async function save(e) {
     completedCollapsed: !!(collapseDoneEl && collapseDoneEl.checked),
     completedRetentionDays: Math.max(0, parseInt((retentionEl && retentionEl.value) || '30', 10)),
     showTags: !!(showTagsEl && showTagsEl.checked),
+    language: langEl ? /** @type {'en'|'ja'|'auto'} */(langEl.value) : 'en',
   };
   await storage.syncSet({ settings: s });
   // 視覚的な保存完了表示（トースト＋ボタン表示）
   if (toastEl) {
-    toastEl.textContent = '保存しました ✓';
+    toastEl.textContent = t('saveToast');
     toastEl.style.display = 'block';
     setTimeout(() => { toastEl.style.display = 'none'; }, 1600);
   }
   const btn = /** @type {HTMLButtonElement} */(document.querySelector('button[type="submit"]'));
   const old = btn?.textContent;
-  if (btn) { btn.textContent = '保存済み ✓'; btn.disabled = true; }
-  setTimeout(() => { if (btn) { btn.textContent = old || '保存'; btn.disabled = false; } }, 1600);
+  if (btn) { btn.textContent = t('saveDoneBtn'); btn.disabled = true; }
+  setTimeout(() => { if (btn) { btn.textContent = old || t('saveBtn'); btn.disabled = false; } }, 1600);
   await chrome.runtime.sendMessage({ type: 'settings-updated' });
+  // 言語が変わった場合、文言を再適用
+  const { t: t2 } = await createI18n();
+  await applyI18nDom(t2);
 }
 
 document.getElementById('optForm').addEventListener('submit', save);

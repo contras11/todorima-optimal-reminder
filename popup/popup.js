@@ -1,8 +1,10 @@
 // - タブ切替（一覧/追加）
 // - タスクの追加/編集/一覧/検索/操作（完了/スヌーズ/削除）
 // - 追加・更新後はサービスワーカーに再スケジュール依頼
+// - i18n 対応（英語既定・オプションで切替）
 
 import { fmtDateTime, MIN } from '../utils/time.js';
+import { createI18n, applyI18nDom } from '../utils/i18n.js';
 
 // Promise ラッパ
 const storage = {
@@ -84,13 +86,14 @@ function showRepeatFields() {
 
 repeatTypeEl.addEventListener('change', showRepeatFields);
 
-$('#resetBtn').addEventListener('click', (e) => {
+$('#resetBtn').addEventListener('click', async (e) => {
   e.preventDefault();
   form.reset();
   idEl.value = '';
   intervalEl.value = '1';
   showRepeatFields();
-  if (saveBtn) saveBtn.textContent = '保存';
+  const { t } = await createI18n();
+  if (saveBtn) saveBtn.textContent = t('save');
 });
 
 form.addEventListener('submit', async (e) => {
@@ -161,28 +164,28 @@ form.addEventListener('submit', async (e) => {
   intervalEl.value = '1';
   await render();
   switchView('list');
-  if (saveBtn) saveBtn.textContent = '保存';
+  if (saveBtn) { const { t } = await createI18n(); saveBtn.textContent = t('save'); }
 });
 
 qEl.addEventListener('input', () => render());
 sortEl.addEventListener('change', () => render());
 
 async function render() {
+  const { t } = await createI18n();
   const tasks = await getTasks();
   const settings = await getSettings();
-  // 手動テーマ適用（システムの場合は dataset を外す）
   try { applyTheme(settings.themeMode || 'system'); } catch {}
-  // タグ入力欄の表示切替と検索プレースホルダ
   try { if (tagsEl) tagsEl.style.display = settings.showTags !== false ? '' : 'none'; } catch {}
-  try { if (qEl) qEl.placeholder = settings.showTags !== false ? '検索（タイトル・タグ）' : '検索（タイトル）'; } catch {}
-  const q = qEl.value.trim().toLowerCase();
-  let items = tasks.filter(t => !t.archived);
+  try { if (qEl) qEl.placeholder = settings.showTags !== false ? t('searchPlaceholderWithTags') : t('searchPlaceholderTitleOnly'); } catch {}
+
+  const q = (qEl.value || '').trim().toLowerCase();
+  let items = tasks.filter(x => !x.archived);
   if (q) {
-    items = items.filter(t => {
-      const inTitle = t.title.toLowerCase().includes(q);
+    items = items.filter(x => {
+      const inTitle = (x.title || '').toLowerCase().includes(q);
       if (inTitle) return true;
       if (settings.showTags !== false) {
-        return (t.tags || []).some(tag => tag.toLowerCase().includes(q));
+        return (x.tags || []).some(tag => tag.toLowerCase().includes(q));
       }
       return false;
     });
@@ -191,25 +194,23 @@ async function render() {
   const order = { high: 0, normal: 1, low: 2 };
   const sorter = (a, b) => {
     if (sortEl.value === 'due') return a.dueAt - b.dueAt;
-    return (order[a.priority||'normal'] - order[b.priority||'normal']) || (a.dueAt - b.dueAt);
+    return (order[a.priority || 'normal'] - order[b.priority || 'normal']) || (a.dueAt - b.dueAt);
   };
 
-  // セクション境界
   const now = Date.now();
   const startOfDay = (ms) => { const dd = new Date(ms); dd.setHours(0,0,0,0); return dd.getTime(); };
   const todayStart = startOfDay(now);
-  const dayMs = 24*60*60*1000;
+  const dayMs = 24 * 60 * 60 * 1000;
   const tomorrowStart = todayStart + dayMs;
   const wso = settings.weekStartsOn === 1 ? 1 : 0;
   const startOfWeek = (ms) => { const sd = new Date(startOfDay(ms)); let dow = sd.getDay(); let shift = dow - (wso===1?1:0); if (shift<0) shift+=7; sd.setDate(sd.getDate()-shift); return sd.getTime(); };
-  const weekEnd = startOfWeek(now) + 7*dayMs - 1;
+  const weekEnd = startOfWeek(now) + 7 * dayMs - 1;
 
-  const overdue = items.filter(t => !t.done && t.dueAt < now).sort(sorter);
-  // 今日: 現在以降のみ（過ぎているものは「期限超過」にのみ表示）
-  const today = items.filter(t => t.dueAt >= Math.max(now, todayStart) && t.dueAt < tomorrowStart).sort(sorter);
-  const tomorrow = items.filter(t => t.dueAt >= tomorrowStart && t.dueAt < tomorrowStart + dayMs).sort(sorter);
-  const thisWeek = items.filter(t => t.dueAt >= (tomorrowStart + dayMs) && t.dueAt <= weekEnd).sort(sorter);
-  const later = items.filter(t => t.dueAt > weekEnd).sort(sorter);
+  const overdue = items.filter(x => !x.done && x.dueAt < now).sort(sorter);
+  const today = items.filter(x => x.dueAt >= Math.max(now, todayStart) && x.dueAt < tomorrowStart).sort(sorter);
+  const tomorrow = items.filter(x => x.dueAt >= tomorrowStart && x.dueAt < tomorrowStart + dayMs).sort(sorter);
+  const thisWeek = items.filter(x => x.dueAt >= (tomorrowStart + dayMs) && x.dueAt <= weekEnd).sort(sorter);
+  const later = items.filter(x => x.dueAt > weekEnd).sort(sorter);
 
   listEl.innerHTML = '';
   const renderSection = (title, arr) => {
@@ -218,66 +219,68 @@ async function render() {
     h.className = 'section-title';
     h.textContent = title;
     listEl.appendChild(h);
-    for (const t of arr) {
+    for (const item of arr) {
       const div = document.createElement('div');
-      div.className = 'task' + (t.dueAt < now && !t.done ? ' task--overdue' : '');
-      const repeatIcon = t.repeat?.type === 'daily' ? '毎日'
-        : t.repeat?.type === 'weekly' ? '毎週'
-        : t.repeat?.type === 'monthly' ? '毎月' : '';
-      const prioChip = t.priority === 'high' ? '<span class="chip chip--prio-high">高</span>'
-        : t.priority === 'low' ? '<span class="chip chip--prio-low">低</span>'
-        : '<span class="chip chip--prio-normal">通常</span>';
-      const tags = settings.showTags !== false ? (t.tags||[]).map(x => `<span class=\"tag\">${x}</span>`).join('') : '';
+      div.className = 'task' + (item.dueAt < now && !item.done ? ' task--overdue' : '');
+      const repeatKey = item.repeat?.type === 'daily' ? 'repeatDaily'
+        : item.repeat?.type === 'weekly' ? 'repeatWeekly'
+        : item.repeat?.type === 'monthly' ? 'repeatMonthly' : '';
+      const prioChip = item.priority === 'high' ? `<span class="chip chip--prio-high">${t('priorityHigh')}</span>`
+        : item.priority === 'low' ? `<span class="chip chip--prio-low">${t('priorityLow')}</span>`
+        : `<span class="chip chip--prio-normal">${t('priorityNormal')}</span>`;
+      const tags = settings.showTags !== false ? (item.tags || []).map(x => `<span class="tag">${x}</span>`).join('') : '';
       div.innerHTML = `
-        <h4>${t.done ? '✅' : ''}<span>${t.title}</span></h4>
+        <h4>${item.done ? '✅' : ''}<span>${item.title}</span></h4>
         <div class="meta">
           <div class="chips">
             ${prioChip}
-            ${repeatIcon ? `<span class="chip">${repeatIcon}</span>` : ''}
+            ${repeatKey ? `<span class="chip">${t(repeatKey)}</span>` : ''}
             ${tags}
           </div>
-          <div class="small">期日: ${fmtDateTime(t.dueAt)}</div>
+          <div class="small">${t('labelDueAt')} ${fmtDateTime(item.dueAt)}</div>
         </div>
-        ${t.note ? `<div class="small" style="margin-top:6px;">${t.note.replace(/</g,'&lt;')}</div>` : ''}
+        ${item.note ? `<div class="small" style="margin-top:6px;">${item.note.replace(/</g,'&lt;')}</div>` : ''}
         <div class="actions" style="margin-top:8px;">
-          <button class="btn" data-act="done" data-id="${t.id}">完了</button>
-          ${settings.enableSnooze ? `<button class="btn" data-act="snooze" data-id="${t.id}">スヌーズ</button>` : ''}
-          <button class="btn" data-act="edit" data-id="${t.id}">編集</button>
-          <button class="btn btn--danger" data-act="delete" data-id="${t.id}">削除</button>
+          <button class="btn" data-act="done" data-id="${item.id}">${t('actionDone')}</button>
+          ${settings.enableSnooze ? `<button class="btn" data-act="snooze" data-id="${item.id}">${t('actionSnooze')}</button>` : ''}
+          <button class="btn" data-act="edit" data-id="${item.id}">${t('actionEdit')}</button>
+          <button class="btn btn--danger" data-act="delete" data-id="${item.id}">${t('actionDelete')}</button>
         </div>
       `;
       listEl.appendChild(div);
     }
   };
 
-  renderSection('期限超過', overdue);
-  renderSection('今日', today);
-  renderSection('明日', tomorrow);
-  renderSection('今週', thisWeek);
-  renderSection('以降', later);
+  renderSection(t('sectionOverdue'), overdue);
+  renderSection(t('sectionToday'), today);
+  renderSection(t('sectionTomorrow'), tomorrow);
+  renderSection(t('sectionThisWeek'), thisWeek);
+  renderSection(t('sectionLater'), later);
 
-  // 完了セクション（折りたたみ対応）
-  const completed = items.filter(t => t.done).sort((a,b) => b.updatedAt - a.updatedAt);
+  const completed = items.filter(x => x.done).sort((a, b) => b.updatedAt - a.updatedAt);
   const ch = document.createElement('div');
   const collapsed = !!settings.completedCollapsed;
   ch.className = 'section-title';
-  ch.setAttribute('data-role','toggle-completed');
+  ch.setAttribute('data-role', 'toggle-completed');
   ch.style.cursor = 'pointer';
-  ch.textContent = `完了 (${completed.length}) ${collapsed ? '▸' : '▾'}`;
+  ch.textContent = `${t('completed')} (${completed.length}) ${collapsed ? '▸' : '▾'}`;
   listEl.appendChild(ch);
   if (!collapsed) {
-    for (const t of completed) {
+    for (const task of completed) {
       const div = document.createElement('div');
       div.className = 'task';
-      const tags = (t.tags||[]).map(x => `<span class=\"tag\">${x}</span>`).join('');
+      const tags = (task.tags || []).map(x => `<span class="tag">${x}</span>`).join('');
       div.innerHTML = `
-        <h4>✅ <span>${t.title}</span></h4>
-        <div class=\"meta\">
-          <div class=\"chips\">${tags}</div>
-          <div class=\"small\">完了: ${fmtDateTime(t.updatedAt || t.dueAt)}</div>
+        <h4>✅ <span>${task.title}</span></h4>
+        <div class="meta">
+          <div class="chips">${tags}</div>
+          <div class="small">${t('labelDoneAt')} ${fmtDateTime(task.updatedAt || task.dueAt)}</div>
         </div>
-        ${t.note ? `<div class=\"small\" style=\"margin-top:6px;\">${t.note.replace(/</g,'&lt;')}</div>` : ''}
-        <div class=\"actions\" style=\"margin-top:8px;\">\n          <button class=\"btn\" data-act=\"edit\" data-id=\"${t.id}\">編集</button>\n          <button class=\"btn btn--danger\" data-act=\"delete\" data-id=\"${t.id}\">削除</button>\n        </div>
+        ${task.note ? `<div class="small" style="margin-top:6px;">${task.note.replace(/</g,'&lt;')}</div>` : ''}
+        <div class="actions" style="margin-top:8px;">
+          <button class="btn" data-act="edit" data-id="${task.id}">${t('actionEdit')}</button>
+          <button class="btn btn--danger" data-act="delete" data-id="${task.id}">${t('actionDelete')}</button>
+        </div>
       `;
       listEl.appendChild(div);
     }
@@ -286,7 +289,7 @@ async function render() {
   if (![overdue.length, today.length, tomorrow.length, thisWeek.length, later.length].some(Boolean)) {
     const empty = document.createElement('div');
     empty.className = 'empty';
-    empty.innerHTML = 'まだタスクがありません。右上の「追加」タブから作成できます。<div style="margin-top:10px;"><button class="btn btn--primary js-go-add">今すぐ追加</button></div>';
+    empty.innerHTML = `${t('emptyNoTasks')}<div style="margin-top:10px;"><button class="btn btn--primary js-go-add">${t('addNow')}</button></div>`;
     listEl.appendChild(empty);
   }
 
@@ -295,7 +298,7 @@ async function render() {
   });
   const goAdd = listEl.querySelector('.js-go-add');
   if (goAdd) goAdd.addEventListener('click', () => switchView('add'));
-  const toggleCompleted = listEl.querySelector('[data-role=\"toggle-completed\"]');
+  const toggleCompleted = listEl.querySelector('[data-role="toggle-completed"]');
   if (toggleCompleted) toggleCompleted.addEventListener('click', async () => {
     const s = await getSettings();
     s.completedCollapsed = !s.completedCollapsed;
@@ -345,7 +348,7 @@ async function onAction(btn) {
       byDayEl.value = String(t.repeat.byDay || new Date(t.baseAt).getDate());
     }
     switchView('add');
-    if (saveBtn) saveBtn.textContent = '更新';
+    if (saveBtn) { const { t } = await createI18n(); saveBtn.textContent = t('update'); }
     titleEl.focus();
   } else if (act === 'delete') {
     const idx = tasks.findIndex(x => x.id === id);
@@ -358,6 +361,13 @@ async function onAction(btn) {
 
 // 初期表示
 (async function init() {
+  // 先にタブのリスナーを登録（描画失敗時でも切替可）
+  if (tabList && tabAdd) {
+    tabList.addEventListener('click', () => switchView('list'));
+    tabAdd.addEventListener('click', () => switchView('add'));
+  }
+  // i18n 適用（静的テキスト）
+  try { const { t } = await createI18n(); await applyI18nDom(t); } catch {}
   // due 初期値は 30 分後
   const next = new Date(Date.now() + 30 * MIN);
   dueEl.value = toDateTimeLocalValue(next.getTime());
@@ -367,12 +377,9 @@ async function onAction(btn) {
     const s = await getSettings();
     applyTheme(s.themeMode || 'system');
   } catch {}
-  await render();
+  // レンダリング（失敗しても他操作は動くように）
+  try { await render(); } catch (e) { /* noop */ }
   switchView('list');
-  if (tabList && tabAdd) {
-    tabList.addEventListener('click', () => switchView('list'));
-    tabAdd.addEventListener('click', () => switchView('add'));
-  }
 })();
 
 /**

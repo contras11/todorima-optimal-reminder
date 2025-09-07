@@ -1,0 +1,111 @@
+{
+  "extDescription": { "message": "単発・繰り返し・スヌーズ・完了・一覧・検索・同期・スリープ中に過ぎた予定の再通知に対応した軽量リマインダー拡張。" },
+  "actionTitle": { "message": "Todorima – Optimal Reminder" },
+
+  "settings": { "message": "設定" },
+  "tabList": { "message": "一覧" },
+  "tabAdd": { "message": "追加" },
+
+  "titlePlaceholder": { "message": "タイトル" },
+  "notePlaceholder": { "message": "メモ" },
+  "tagsPlaceholder": { "message": "タグ（カンマ区切り）" },
+
+  "priorityNormal": { "message": "通常" },
+  "priorityHigh": { "message": "高" },
+  "priorityLow": { "message": "低" },
+
+  "repeatNone": { "message": "繰り返しなし" },
+  "repeatDaily": { "message": "毎日" },
+  "repeatWeekly": { "message": "毎週" },
+  "repeatMonthly": { "message": "毎月" },
+
+  "labelWeekdays": { "message": "曜日:" },
+  "labelDayOfMonth": { "message": "日付:" },
+  "labelInterval": { "message": "間隔" },
+  "weekdaySun": { "message": "日" },
+  "weekdayMon": { "message": "月" },
+  "weekdayTue": { "message": "火" },
+  "weekdayWed": { "message": "水" },
+  "weekdayThu": { "message": "木" },
+  "weekdayFri": { "message": "金" },
+  "weekdaySat": { "message": "土" },
+
+  "save": { "message": "保存" },
+  "reset": { "message": "リセット" },
+  "update": { "message": "更新" },
+
+  "searchPlaceholderWithTags": { "message": "検索（タイトル・タグ）" },
+  "searchPlaceholderTitleOnly": { "message": "検索（タイトル）" },
+
+  "sortDueAsc": { "message": "期日昇順" },
+  "sortPriority": { "message": "優先度" },
+
+  "sectionOverdue": { "message": "期限超過" },
+  "sectionToday": { "message": "今日" },
+  "sectionTomorrow": { "message": "明日" },
+  "sectionThisWeek": { "message": "今週" },
+  "sectionLater": { "message": "以降" },
+
+  "actionDone": { "message": "完了" },
+  "actionSnooze": { "message": "スヌーズ" },
+  "actionEdit": { "message": "編集" },
+  "actionDelete": { "message": "削除" },
+
+  "labelDueAt": { "message": "期日:" },
+  "labelDoneAt": { "message": "完了:" },
+  "completed": { "message": "完了" },
+  "emptyNoTasks": { "message": "まだタスクがありません。右上の「追加」タブから作成できます。" },
+  "addNow": { "message": "今すぐ追加" },
+
+  "optionsTitle": { "message": "Todorima – Optimal Reminder — 設定" },
+  "optionsDesc": { "message": "通知・スヌーズ・スリープ復帰後の再通知などの動作をカスタマイズできます。" },
+
+  "secNotifications": { "message": "通知" },
+  "labelRequireInteraction": { "message": "通知を自動で閉じない" },
+  "hintRequireInteraction": { "message": "オンにすると、通知を手動で閉じるまで表示を維持します（OS により無視される場合あり）。" },
+  "labelEnableSnooze": { "message": "スヌーズ機能を有効にする" },
+  "hintEnableSnooze": { "message": "オフにすると通知や一覧からスヌーズ操作が非表示になります。" },
+
+  "secSnooze": { "message": "スヌーズ" },
+  "labelDefaultSnoozeMin": { "message": "既定スヌーズ（分）" },
+
+  "secDisplay": { "message": "予定の表示" },
+  "labelTheme": { "message": "テーマ" },
+  "themeSystem": { "message": "システムに合わせる" },
+  "themeLight": { "message": "ライト" },
+  "themeDark": { "message": "ダーク" },
+  "labelShowTags": { "message": "タグ機能を有効にする" },
+  "hintShowTags": { "message": "オフにすると、一覧のタグ表示と入力欄、タグ検索を非表示にします。" },
+  "labelCompletedCollapsed": { "message": "完了セクションを折りたたむ（既定）" },
+  "hintCompletedCollapsed": { "message": "オンにすると、一覧の完了セクションが折りたたまれた状態で表示されます。" },
+  "labelWeekStartsOn": { "message": "週の開始曜日" },
+  "sunday": { "message": "日曜" },
+  "monday": { "message": "月曜" },
+
+  "secCatchup": { "message": "スリープ復帰時の再通知" },
+  "labelCatchupHours": { "message": "復帰後に通知し直す対象期間（時間）" },
+  "hintCatchupHours": { "message": "PC のスリープ等で不在の間に、この時間内に期限を過ぎたタスクを復帰後に通知します。" },
+  "labelMaxIndividualCatchup": { "message": "復帰後に個別通知する最大件数" },
+
+  "secData": { "message": "データ管理" },
+  "labelCompletedRetentionDays": { "message": "完了タスクの自動削除（保持日数）" },
+  "hintCompletedRetentionDays": { "message": "0 にすると自動削除を無効化します。既定は 30 日。" },
+  "saveToSyncHint": { "message": "設定は chrome.storage.sync に保存され、サインインしているブラウザ間で同期されます。" },
+
+  "secLanguage": { "message": "言語" },
+  "labelLanguage": { "message": "UI 言語" },
+  "languageAuto": { "message": "自動（ブラウザ）" },
+  "languageEnglish": { "message": "英語" },
+  "languageJapanese": { "message": "日本語" },
+
+  "saveToast": { "message": "保存しました ✓" },
+  "saveDoneBtn": { "message": "保存済み ✓" },
+  "saveBtn": { "message": "保存" },
+
+  "notifTitle": { "message": "Todorima – Optimal Reminder | リマインダー: $1" },
+  "notifBtnDone": { "message": "完了" },
+  "notifBtnSnooze": { "message": "スヌーズ(+$1分)" },
+  "summaryTitle": { "message": "スリープ中に過ぎた予定のお知らせ" },
+  "summaryMessage": { "message": "スリープ中に $1 件の予定が期限を迎えました。拡張の一覧で確認できます。" },
+  "quickTask": { "message": "クイックタスク" }
+}
